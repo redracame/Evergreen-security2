@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BookOpen, CheckCircle, Clock, Download, Trophy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { generateCertificate, generateCertificateId, type CertificateData } from '@/utils/certificateGenerator';
+import { useAuthStore } from '@/stores/authStore';
 
 const trainingModules = [
   {
@@ -86,7 +88,9 @@ const Training = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
+  const [modules, setModules] = useState(trainingModules);
   const { toast } = useToast();
+  const { user } = useAuthStore();
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -112,7 +116,7 @@ const Training = () => {
 
   const startModule = (moduleId: number) => {
     setSelectedModule(moduleId);
-    const module = trainingModules.find(m => m.id === moduleId);
+    const module = modules.find(m => m.id === moduleId);
     if (module?.status === 'completed') {
       setShowQuiz(false);
     } else {
@@ -120,6 +124,8 @@ const Training = () => {
       setCurrentQuestion(0);
       setAnswers([]);
       setQuizCompleted(false);
+      setScore(0);
+      setSelectedAnswer('');
     }
   };
 
@@ -148,6 +154,15 @@ const Training = () => {
       setQuizCompleted(true);
       
       if (finalScore >= 80) {
+        // Update module status to completed
+        setModules(prevModules => 
+          prevModules.map(module => 
+            module.id === selectedModule 
+              ? { ...module, status: 'completed' as const, completedAt: new Date().toLocaleDateString(), progress: undefined }
+              : module
+          )
+        );
+        
         toast({
           title: "Congratulations!",
           description: `You passed with ${finalScore}%! Certificate available for download.`,
@@ -162,15 +177,38 @@ const Training = () => {
     }
   };
 
-  const downloadCertificate = () => {
-    toast({
-      title: "Certificate Downloaded",
-      description: "Your completion certificate has been downloaded.",
-    });
+  const downloadCertificate = async () => {
+    if (!selectedModule || !user) return;
+    
+    const module = trainingModules.find(m => m.id === selectedModule);
+    if (!module) return;
+
+    try {
+      const certificateData: CertificateData = {
+        recipientName: user.name,
+        courseName: module.title,
+        completionDate: module.completedAt || new Date().toLocaleDateString(),
+        score: score || 100,
+        certificateId: generateCertificateId()
+      };
+
+      await generateCertificate(certificateData);
+      
+      toast({
+        title: "Certificate Downloaded",
+        description: "Your completion certificate has been downloaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Failed to generate certificate. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (selectedModule) {
-    const module = trainingModules.find(m => m.id === selectedModule);
+    const module = modules.find(m => m.id === selectedModule);
     
     return (
       <div className="p-6 max-w-4xl mx-auto">
@@ -292,7 +330,7 @@ const Training = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trainingModules.map((module) => (
+        {modules.map((module) => (
           <Card key={module.id} className="cursor-pointer hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
