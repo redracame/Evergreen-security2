@@ -5,7 +5,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  role: 'employee' | 'manager' | 'compliance_officer' | 'admin';
+  role: 'employee' | 'manager' | 'admin';
   name: string;
 }
 
@@ -16,35 +16,42 @@ interface AuthState {
   logout: () => void;
 }
 
-// Mock users for demo
+// Real users
 const mockUsers: User[] = [
   {
     id: '1',
-    username: 'employee',
-    email: 'employee@evergreen.com',
+    username: 'employee1',
+    email: 'gunaratnewickrama@gmail.com',
     role: 'employee',
-    name: 'John Employee'
+    name: 'Gunaratne Wickrama'
   },
   {
     id: '2',
-    username: 'manager',
-    email: 'manager@evergreen.com',
-    role: 'manager',
-    name: 'Sarah Manager'
+    username: 'employee2',
+    email: 'kaluuathal@gmail.com',
+    role: 'employee',
+    name: 'Kalu Athal'
   },
   {
     id: '3',
-    username: 'compliance',
-    email: 'compliance@evergreen.com',
-    role: 'compliance_officer',
-    name: 'Mike Compliance'
+    username: 'manager',
+    email: 'yasas.nawanjana@gmail.com',
+    role: 'manager',
+    name: 'Yasas Nawanjana'
   },
   {
     id: '4',
-    username: 'admin',
-    email: 'admin@evergreen.com',
+    username: 'admin1',
+    email: 'linukaauchithya@gmail.com',
     role: 'admin',
-    name: 'Lisa Admin'
+    name: 'Linuka Auchithya'
+  },
+  {
+    id: '5',
+    username: 'admin2',
+    email: 'nlokuvithana71@gmail.com',
+    role: 'admin',
+    name: 'N Lokuvithana'
   }
 ];
 
@@ -54,10 +61,19 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       login: async (username: string, password: string, otp: string) => {
-        // Mock login - in real app, this would call an API
-        const user = mockUsers.find(u => u.username === username);
+        // Real authentication with specific passwords
+        const user = mockUsers.find(u => u.username === username || u.email === username);
         
-        if (user && password === 'password' && otp === '123456') {
+        // Check credentials with real passwords
+        const validCredentials = user && (
+          (user.email === 'linukaauchithya@gmail.com' && password === 'Linuka1@3') ||
+          (user.email === 'gunaratnewickrama@gmail.com' && password === 'Sandul1@3') ||
+          (user.email === 'kaluuathal@gmail.com' && password === 'Kalu1@3') ||
+          (user.email === 'nlokuvithana71@gmail.com' && password === 'Nisith1@3') ||
+          (user.email === 'yasas.nawanjana@gmail.com' && password === 'Yasas1@3')
+        ) && otp === '123456';
+        
+        if (validCredentials) {
           set({ user, isAuthenticated: true });
           return true;
         }

@@ -62,10 +62,11 @@ const Login = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">Email Address</Label>
                 <Input
                   id="username"
-                  placeholder="Enter your username"
+                  type="email"
+                  placeholder="Enter your email address"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -107,14 +108,6 @@ const Login = () => {
               </Button>
             </form>
 
-            <div className="mt-6 p-4 bg-muted rounded-lg">
-              <p className="text-sm font-medium mb-2">Demo Credentials:</p>
-              <div className="text-xs space-y-1 text-muted-foreground">
-                <p><strong>Username:</strong> employee, manager, compliance, admin</p>
-                <p><strong>Password:</strong> password</p>
-                <p><strong>OTP:</strong> 123456</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
