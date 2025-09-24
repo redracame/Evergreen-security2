@@ -301,53 +301,6 @@ const Reports = () => {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Quick Stats
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center p-3 bg-primary/10 rounded-lg">
-                <div className="text-2xl font-bold text-primary">12</div>
-                <div className="text-sm text-muted-foreground">Reports This Month</div>
-              </div>
-              <div className="text-center p-3 bg-success/10 rounded-lg">
-                <div className="text-2xl font-bold text-success">85%</div>
-                <div className="text-sm text-muted-foreground">Avg Compliance Rate</div>
-              </div>
-              <div className="text-center p-3 bg-warning/10 rounded-lg">
-                <div className="text-2xl font-bold text-warning">3</div>
-                <div className="text-sm text-muted-foreground">Pending Actions</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <FileText className="h-4 w-4" />
-                Export All Data
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <CalendarIcon className="h-4 w-4" />
-                Schedule Reports
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <Filter className="h-4 w-4" />
-                Advanced Filters
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Analytics Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
               <CardTitle>Report Templates</CardTitle>
               <CardDescription>Available report types</CardDescription>
             </CardHeader>
@@ -359,9 +312,6 @@ const Reports = () => {
                     <div className="text-muted-foreground text-xs">{template.category}</div>
                   </div>
                 ))}
-                <Button variant="outline" size="sm" className="w-full mt-2">
-                  View All Templates
-                </Button>
               </div>
             </CardContent>
           </Card>
