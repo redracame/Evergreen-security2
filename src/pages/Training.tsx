@@ -347,18 +347,7 @@ const Training = () => {
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 Duration: {module.duration}
-              </div>
-              
-              {module.status === 'in_progress' && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Progress</span>
-                    <span>{module.progress}%</span>
-                  </div>
-                  <Progress value={module.progress} />
-                </div>
-              )}
-              
+              </div>             
               {module.status === 'completed' && (
                 <Alert>
                   <CheckCircle className="h-4 w-4" />
