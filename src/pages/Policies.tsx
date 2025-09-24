@@ -266,34 +266,6 @@ const Policies = () => {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Policy Acknowledgment Summary</CardTitle>
-          <CardDescription>Your current acknowledgment status</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-success/10 rounded-lg">
-              <div className="text-2xl font-bold text-success">
-                {policies.filter(p => p.status === 'acknowledged').length}
-              </div>
-              <div className="text-sm text-muted-foreground">Acknowledged</div>
-            </div>
-            <div className="text-center p-4 bg-destructive/10 rounded-lg">
-              <div className="text-2xl font-bold text-destructive">
-                {policies.filter(p => p.status === 'pending').length}
-              </div>
-              <div className="text-sm text-muted-foreground">Pending</div>
-            </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <div className="text-2xl font-bold">
-                {policies.length}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Policies</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
