@@ -56,7 +56,7 @@ const mockUsers: User[] = [
     username: 'admin2',
     email: 'nlokuvithana71@gmail.com',
     role: 'admin',
-    name: 'N Lokuvithana',
+    name: 'Nisith Lokuvithana',
     otp: '726394'  // unique OTP
   }
 ];

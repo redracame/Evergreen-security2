@@ -14,9 +14,9 @@ const policies = [
     id: 1,
     title: 'Code of Conduct',
     version: '2.1',
-    effectiveDate: '2024-01-01',
+    effectiveDate: '2025-09-01',
     status: 'acknowledged',
-    acknowledgedDate: '2024-01-15',
+    acknowledgedDate: '2025-09-24',
     description: 'Guidelines for professional behavior and ethical standards in the workplace.',
     content: `This Code of Conduct establishes the standards of behavior expected from all employees of Evergreen Group. 
 
@@ -33,7 +33,7 @@ Violations of this code may result in disciplinary action up to and including te
     id: 2,
     title: 'Data Protection Policy',
     version: '1.3',
-    effectiveDate: '2024-02-01',
+    effectiveDate: '2025-09-01',
     status: 'pending',
     description: 'Comprehensive guidelines for handling personal and sensitive data in compliance with GDPR.',
     content: `This policy outlines how Evergreen Group collects, processes, and protects personal data.
@@ -56,7 +56,7 @@ All employees must:
     id: 3,
     title: 'Health & Safety Policy',
     version: '3.0',
-    effectiveDate: '2024-01-15',
+    effectiveDate: '2025-09-01',
     status: 'pending',
     description: 'Workplace safety procedures and emergency protocols.',
     content: `Our commitment to maintaining a safe and healthy work environment for all employees.
@@ -77,9 +77,9 @@ Emergency Procedures:
     id: 4,
     title: 'Remote Work Policy',
     version: '1.0',
-    effectiveDate: '2024-03-01',
+    effectiveDate: '2025-09-01',
     status: 'acknowledged',
-    acknowledgedDate: '2024-03-05',
+    acknowledgedDate: '2025-09-24',
     description: 'Guidelines for remote work arrangements and expectations.',
     content: `This policy establishes guidelines for remote work to ensure productivity and security.
 

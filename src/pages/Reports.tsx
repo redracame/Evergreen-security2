@@ -17,7 +17,7 @@ const savedReports = [
     id: 1,
     name: 'Monthly Compliance Summary',
     type: 'compliance',
-    lastGenerated: '2024-01-15',
+    lastGenerated: '2025-09-15',
     status: 'ready',
     description: 'Overall compliance metrics and trends'
   },
@@ -25,7 +25,7 @@ const savedReports = [
     id: 2,
     name: 'Training Completion Report',
     type: 'training',
-    lastGenerated: '2024-01-14', 
+    lastGenerated: '2025-09-15', 
     status: 'ready',
     description: 'Employee training progress and completions'
   },
@@ -33,7 +33,7 @@ const savedReports = [
     id: 3,
     name: 'Policy Acknowledgment Status',
     type: 'policy',
-    lastGenerated: '2024-01-13',
+    lastGenerated: '2025-09-13',
     status: 'generating',
     description: 'Policy acknowledgment tracking and pending items'
   },
@@ -41,7 +41,7 @@ const savedReports = [
     id: 4,
     name: 'Department Risk Assessment',
     type: 'risk',
-    lastGenerated: '2024-01-10',
+    lastGenerated: '2025-09-14',
     status: 'ready',
     description: 'Risk analysis by department and role'
   }
@@ -152,25 +152,7 @@ const Reports = () => {
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="department">Department Filter</Label>
-                  <Select value={filterDepartment} onValueChange={setFilterDepartment}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="All departments" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Departments</SelectItem>
-                      <SelectItem value="hr">Human Resources</SelectItem>
-                      <SelectItem value="it">Information Technology</SelectItem>
-                      <SelectItem value="sales">Sales</SelectItem>
-                      <SelectItem value="operations">Operations</SelectItem>
-                      <SelectItem value="finance">Finance</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Start Date</Label>
@@ -278,15 +260,6 @@ const Reports = () => {
                         >
                           <Download className="h-3 w-3" />
                           PDF
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => downloadReport(report.id, 'csv')}
-                          className="gap-1"
-                        >
-                          <Download className="h-3 w-3" />
-                          CSV
                         </Button>
                       </div>
                     )}

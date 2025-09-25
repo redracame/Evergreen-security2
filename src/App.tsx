@@ -86,7 +86,7 @@ const App = () => (
             </AuthGuard>
           } />
           <Route path="/compliance" element={
-            <AuthGuard requiredRole={['manager', 'compliance_officer', 'admin']}>
+            <AuthGuard requiredRole={['manager', 'admin']}>
               <SidebarProvider>
                 <div className="min-h-screen flex w-full">
                   <AppSidebar />
@@ -106,7 +106,7 @@ const App = () => (
             </AuthGuard>
           } />
           <Route path="/reports" element={
-            <AuthGuard requiredRole={['manager', 'compliance_officer', 'admin']}>
+            <AuthGuard requiredRole={['manager', 'admin']}>
               <SidebarProvider>
                 <div className="min-h-screen flex w-full">
                   <AppSidebar />
