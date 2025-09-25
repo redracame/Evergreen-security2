@@ -9,11 +9,13 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
-// ✅ Import images
+// ✅ Import images (match your current filenames)
 import awarenessImg from "@/assets/awareness.jpeg";
 import gdprImg from "@/assets/gdpr.jpeg";
-import phishingImg from "@/assets/phining.jpeg";
-import safetyImg from "@/assets/safty.jpeg";
+import phishingImg from "@/assets/phining.jpeg"; // use your actual file name
+import safetyImg from "@/assets/safty.jpeg";     // use your actual file name
+
+import { useAuthStore } from "@/stores/authStore"; // get logged-in user
 
 interface Policy {
   title: string;
@@ -73,7 +75,9 @@ export default function Dashboard() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const awarenessProgress = 65;
-  const userName = "Linuka Auchithya"; // <- dynamic if needed
+
+  const user = useAuthStore(state => state.user); // get logged-in user
+  const userName = user?.name || "User"; // fallback if name not available
 
   return (
     <div className="p-6 space-y-6">
