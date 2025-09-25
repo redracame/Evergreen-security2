@@ -13,32 +13,31 @@ import { Users, BookOpen, FileText, Activity, Plus, Edit, Trash2, Search, Shield
 import { useToast } from '@/hooks/use-toast';
 
 const initialUsers = [
-  { id: 1, name: 'John Employee', email: 'john@evergreen.com', role: 'employee', department: 'Operations', status: 'active', lastLogin: '2024-01-15' },
-  { id: 2, name: 'Sarah Manager', email: 'sarah@evergreen.com', role: 'manager', department: 'HR', status: 'active', lastLogin: '2024-01-15' },
-  { id: 3, name: 'Mike Compliance', email: 'mike@evergreen.com', role: 'compliance_officer', department: 'Compliance', status: 'active', lastLogin: '2024-01-14' },
-  { id: 4, name: 'Lisa Admin', email: 'lisa@evergreen.com', role: 'admin', department: 'IT', status: 'active', lastLogin: '2024-01-15' },
-  { id: 5, name: 'Tom Wilson', email: 'tom@evergreen.com', role: 'employee', department: 'Sales', status: 'inactive', lastLogin: '2024-01-10' }
+  { id: 1, name: 'Gunaratne Wickrema', email: 'gunaratnewickrema@gmail.com', role: 'employee', status: 'active', lastLogin: '2025-09-15' },
+  { id: 2, name: 'Yasas Nawanajana', email: 'yasas.nawanjana@gmail.com', role: 'manager', status: 'active', lastLogin: '2025-09-15' },
+  { id: 3, name: 'Nisith Lokuvithana', email: 'nlokuvithana71@gmail.com', role: 'admin', status: 'active', lastLogin: '2025-09-15' },
+  { id: 4, name: 'Linuka Auchithiya', email: 'linukaauchithiya@gmail.com', role: 'admin', status: 'active', lastLogin: '2025-09-14' }
 ];
 
 const initialTrainingModules = [
-  { id: 1, title: 'Workplace Safety Fundamentals', description: 'Essential safety protocols and procedures', status: 'active', enrolled: 145 },
-  { id: 2, title: 'Data Protection & GDPR', description: 'Data handling and privacy regulations', status: 'active', enrolled: 132 },
+  { id: 1, title: 'Workplace Safety Fundamentals', description: 'Essential safety protocols and procedures', status: 'active', enrolled: 1 },
+  { id: 2, title: 'Data Protection & GDPR', description: 'Data handling and privacy regulations', status: 'active', enrolled: 1 },
   { id: 3, title: 'Environmental Sustainability', description: 'Green practices and environmental responsibility', status: 'draft', enrolled: 0 },
-  { id: 4, title: 'Diversity & Inclusion', description: 'Building inclusive workplace culture', status: 'active', enrolled: 98 }
+  { id: 4, title: 'Diversity & Inclusion', description: 'Building inclusive workplace culture', status: 'active', enrolled: 3}
 ];
 
 const initialPolicies = [
-  { id: 1, title: 'Code of Conduct', version: '2.1', status: 'active', acknowledgments: 189 },
-  { id: 2, title: 'Data Protection Policy', version: '1.3', status: 'active', acknowledgments: 156 },
-  { id: 3, title: 'Remote Work Policy', version: '1.0', status: 'active', acknowledgments: 123 },
+  { id: 1, title: 'Code of Conduct', version: '2.1', status: 'active', acknowledgments: 1 },
+  { id: 2, title: 'Data Protection Policy', version: '1.3', status: 'active', acknowledgments: 2 },
+  { id: 3, title: 'Remote Work Policy', version: '1.0', status: 'active', acknowledgments: 1 },
   { id: 4, title: 'Health & Safety Policy', version: '3.0', status: 'draft', acknowledgments: 0 }
 ];
 
 const activityLogs = [
-  { id: 1, user: 'John Employee', action: 'Completed training module', details: 'Workplace Safety Fundamentals', timestamp: '2024-01-15 14:30' },
-  { id: 2, user: 'Sarah Manager', action: 'Acknowledged policy', details: 'Data Protection Policy v1.3', timestamp: '2024-01-15 13:45' },
-  { id: 3, user: 'Admin System', action: 'User role updated', details: 'Tom Wilson promoted to Manager', timestamp: '2024-01-15 12:20' },
-  { id: 4, user: 'Mike Compliance', action: 'Generated report', details: 'Monthly Compliance Summary', timestamp: '2024-01-15 11:15' }
+  { id: 1, user: 'Gunaratne Wickrema', action: 'Completed training module', details: 'Workplace Safety Fundamentals', timestamp: '2025-09-15 14:30' },
+  { id: 2, user: 'Yasas Nawanajana', action: 'Acknowledged policy', details: 'Data Protection Policy v1.3', timestamp: '2025-09-15 13:45' },
+  { id: 3, user: 'Nisith Lokuvithana', action: 'User role updated', details: 'Yasas Nawanajana promoted to Manager', timestamp: '2025-09-15 12:20' },
+  { id: 4, user: 'Linuka Auchithiya', action: 'Generated report', details: 'Monthly Compliance Summary', timestamp: '2025-09-15 11:15' }
 ];
 
 const Admin = () => {
@@ -46,7 +45,7 @@ const Admin = () => {
   const [users, setUsers] = useState(initialUsers);
   const [trainingModules, setTrainingModules] = useState(initialTrainingModules);
   const [policies, setPolicies] = useState(initialPolicies);
-  const [newUserData, setNewUserData] = useState({ name: '', email: '', role: 'employee', department: '' });
+  const [newUserData, setNewUserData] = useState({ name: '', email: '', role: 'employee'});
   const [newModuleData, setNewModuleData] = useState({ title: '', description: '' });
   const [newPolicyData, setNewPolicyData] = useState({ title: '', version: '', description: '' });
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -57,7 +56,6 @@ const Admin = () => {
   const getRoleBadge = (role: string) => {
     const roleColors: Record<string, string> = {
       admin: 'bg-destructive',
-      compliance_officer: 'bg-primary', 
       manager: 'bg-warning text-warning-foreground',
       employee: 'bg-secondary'
     };
@@ -99,7 +97,7 @@ const Admin = () => {
       description: `${newUserData.name} has been added successfully.`,
     });
     
-    setNewUserData({ name: '', email: '', role: 'employee', department: '' });
+    setNewUserData({ name: '', email: '', role: 'employee' });
   };
 
   const createModule = () => {
@@ -234,8 +232,7 @@ const Admin = () => {
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.department.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -313,19 +310,9 @@ const Admin = () => {
                         <SelectContent>
                           <SelectItem value="employee">Employee</SelectItem>
                           <SelectItem value="manager">Manager</SelectItem>
-                          <SelectItem value="compliance_officer">Compliance Officer</SelectItem>
                           <SelectItem value="admin">Admin</SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="department">Department</Label>
-                      <Input
-                        id="department"
-                        value={newUserData.department}
-                        onChange={(e) => setNewUserData({...newUserData, department: e.target.value})}
-                        placeholder="Enter department"
-                      />
                     </div>
                     <Button onClick={createUser} className="w-full">
                       Create User
@@ -352,7 +339,6 @@ const Admin = () => {
                       <th className="text-left p-2">Name</th>
                       <th className="text-left p-2">Email</th>
                       <th className="text-left p-2">Role</th>
-                      <th className="text-left p-2">Department</th>
                       <th className="text-left p-2">Status</th>
                       <th className="text-left p-2">Last Login</th>
                       <th className="text-left p-2">Actions</th>
@@ -364,7 +350,6 @@ const Admin = () => {
                         <td className="p-2 font-medium">{user.name}</td>
                         <td className="p-2 text-muted-foreground">{user.email}</td>
                         <td className="p-2">{getRoleBadge(user.role)}</td>
-                        <td className="p-2">{user.department}</td>
                         <td className="p-2">{getStatusBadge(user.status)}</td>
                         <td className="p-2 text-sm text-muted-foreground">{user.lastLogin}</td>
                         <td className="p-2">
@@ -638,18 +623,9 @@ const Admin = () => {
                   <SelectContent>
                     <SelectItem value="employee">Employee</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="compliance_officer">Compliance Officer</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editDepartment">Department</Label>
-                <Input
-                  id="editDepartment"
-                  value={editingUser.department}
-                  onChange={(e) => setEditingUser({...editingUser, department: e.target.value})}
-                />
               </div>
               <Button onClick={updateUser} className="w-full">
                 Update User

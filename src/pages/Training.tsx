@@ -12,7 +12,7 @@ import { generateCertificate, generateCertificateId, type CertificateData } from
 import { useAuthStore } from '@/stores/authStore';
 
 const trainingModules = [
-  { id: 1, title: 'Workplace Safety Fundamentals', status: 'completed', description: 'Essential safety protocols and procedures', duration: '45 mins', completedAt: '2024-01-15' },
+  { id: 1, title: 'Workplace Safety Fundamentals', status: 'completed', description: 'Essential safety protocols and procedures', duration: '45 mins', completedAt: '2025-09-15'},
   { id: 2, title: 'Data Protection & GDPR Compliance', status: 'in_progress', description: 'Data handling and privacy regulations', duration: '60 mins', progress: 60 },
   { id: 3, title: 'Environmental Sustainability', status: 'not_started', description: 'Green practices and environmental responsibility', duration: '30 mins' },
   { id: 4, title: 'Diversity & Inclusion Workshop', status: 'not_started', description: 'Building inclusive workplace culture', duration: '90 mins' }

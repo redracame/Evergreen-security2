@@ -12,13 +12,6 @@ const complianceData = [
   { name: 'Non-Compliant', value: 5, color: 'hsl(var(--destructive))' }
 ];
 
-const departmentData = [
-  { department: 'HR', compliance: 95, employees: 25 },
-  { department: 'IT', compliance: 88, employees: 40 },
-  { department: 'Sales', compliance: 82, employees: 60 },
-  { department: 'Operations', compliance: 78, employees: 80 },
-  { department: 'Finance', compliance: 92, employees: 30 }
-];
 
 const trendData = [
   { month: 'Jan', compliance: 82 },
@@ -34,26 +27,14 @@ const alerts = [
     id: 1,
     type: 'overdue_training',
     severity: 'high',
-    message: '15 employees have overdue safety training',
-    department: 'Operations',
-    dueDate: '2024-01-15'
+    message: '3 employees have overdue safety training',
   },
   {
     id: 2,
     type: 'policy_acknowledgment',
     severity: 'medium',
-    message: '8 pending policy acknowledgments for Data Protection Policy',
-    department: 'IT',
-    dueDate: '2024-01-20'
+    message: '2 pending policy acknowledgments for Data Protection Policy',
   },
-  {
-    id: 3,
-    type: 'certification_expiry',
-    severity: 'low',
-    message: '3 certifications expiring in next 30 days',
-    department: 'HR',
-    dueDate: '2024-02-01'
-  }
 ];
 
 const Compliance = () => {
@@ -100,10 +81,6 @@ const Compliance = () => {
           <p className="text-muted-foreground">Monitor organizational compliance and manage risks</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => exportReport('CSV')} className="gap-2">
-            <Download className="h-4 w-4" />
-            Export CSV
-          </Button>
           <Button onClick={() => exportReport('PDF')} className="gap-2">
             <Download className="h-4 w-4" />
             Export PDF
@@ -120,22 +97,6 @@ const Compliance = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">85%</div>
-            <p className="text-xs text-muted-foreground">
-              +3% from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              1 high priority
-            </p>
           </CardContent>
         </Card>
 
@@ -145,23 +106,7 @@ const Compliance = () => {
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">235</div>
-            <p className="text-xs text-muted-foreground">
-              Across 5 departments
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Actions</CardTitle>
-            <FileText className="h-4 w-4 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">26</div>
-            <p className="text-xs text-muted-foreground">
-              Require attention
-            </p>
+            <div className="text-2xl font-bold">5</div>
           </CardContent>
         </Card>
       </div>
@@ -183,11 +128,6 @@ const Compliance = () => {
                   {getSeverityIcon(alert.severity)}
                   <div className="space-y-1">
                     <p className="font-medium">{alert.message}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{alert.department}</span>
-                      <span>•</span>
-                      <span>Due: {alert.dueDate}</span>
-                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

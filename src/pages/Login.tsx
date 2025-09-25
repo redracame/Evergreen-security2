@@ -40,7 +40,7 @@ const USERS = [
     otp: "904582",
   },
   {
-    name: "N Lokuvithana",
+    name: "Nisith Lokuvithana",
     email: "nlokuvithana71@gmail.com",
     role: "Admin",
     password: "Nisith1@3",

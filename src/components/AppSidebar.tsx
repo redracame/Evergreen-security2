@@ -17,11 +17,11 @@ import { Button } from "@/components/ui/button";
 import evergreen from "@/assets/evergreen-logo.jpeg";
 
 const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: Home, roles: ['employee', 'manager', 'compliance_officer', 'admin'] },
-  { title: "Training", url: "/training", icon: BookOpen, roles: ['employee', 'manager', 'compliance_officer', 'admin'] },
-  { title: "Policies", url: "/policies", icon: FileText, roles: ['employee', 'manager', 'compliance_officer', 'admin'] },
-  { title: "Compliance", url: "/compliance", icon: Shield, roles: ['manager', 'compliance_officer', 'admin'] },
-  { title: "Reports", url: "/reports", icon: BarChart3, roles: ['manager', 'compliance_officer', 'admin'] },
+  { title: "Dashboard", url: "/dashboard", icon: Home, roles: ['employee', 'manager','admin'] },
+  { title: "Training", url: "/training", icon: BookOpen, roles: ['employee', 'manager', 'admin'] },
+  { title: "Policies", url: "/policies", icon: FileText, roles: ['employee', 'manager', 'admin'] },
+  { title: "Compliance", url: "/compliance", icon: Shield, roles: ['manager', 'admin'] },
+  { title: "Reports", url: "/reports", icon: BarChart3, roles: ['manager', 'admin'] },
   { title: "Admin Panel", url: "/admin", icon: Settings, roles: ['admin'] },
 ];
 
