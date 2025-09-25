@@ -9,11 +9,11 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
-// ✅ Import images (match your current filenames)
+// ✅ Import images
 import awarenessImg from "@/assets/awareness.jpeg";
 import gdprImg from "@/assets/gdpr.jpeg";
-import phishingImg from "@/assets/phining.jpeg"; // use your actual file name
-import safetyImg from "@/assets/safty.jpeg";     // use your actual file name
+import phishingImg from "@/assets/phining.jpeg";
+import safetyImg from "@/assets/safty.jpeg";
 
 import { useAuthStore } from "@/stores/authStore"; // get logged-in user
 
@@ -22,6 +22,20 @@ interface Policy {
   short: string;
   full: string[];
   image: string;
+  videos?: string[]; // multiple videos possible
+}
+
+// 🔧 Helper: Convert YouTube links to embed format
+function getYouTubeEmbedUrl(url: string): string {
+  if (url.includes("youtu.be/")) {
+    const videoId = url.split("youtu.be/")[1];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes("watch?v=")) {
+    const videoId = url.split("watch?v=")[1];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url; // fallback
 }
 
 const policies: Policy[] = [
@@ -35,6 +49,7 @@ const policies: Policy[] = [
       "Learning GDPR boosts compliance, legal, and cybersecurity career opportunities.",
     ],
     image: gdprImg,
+    videos: ["https://youtu.be/eaeBD8gEuqo"], // ✅ GDPR
   },
   {
     title: "Cybersecurity Awareness",
@@ -46,6 +61,7 @@ const policies: Policy[] = [
       "Cybersecurity knowledge opens doors in IT security and cyber defense careers.",
     ],
     image: awarenessImg,
+    videos: ["https://youtu.be/tlmpSYlhdV0"], // ✅ Cybersecurity Awareness
   },
   {
     title: "Phishing & Email Security",
@@ -57,6 +73,7 @@ const policies: Policy[] = [
       "Email security expertise supports careers as SOC or cybersecurity analysts.",
     ],
     image: phishingImg,
+    videos: ["https://youtu.be/-Br0-VYD3xk"], // ✅ Only this video
   },
   {
     title: "Workplace Safety",
@@ -68,6 +85,7 @@ const policies: Policy[] = [
       "Safety knowledge builds leadership and career growth in management roles.",
     ],
     image: safetyImg,
+    videos: ["https://youtu.be/wujRww8jMJE"], // ✅ Workplace Safety
   },
 ];
 
@@ -75,9 +93,8 @@ export default function Dashboard() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const awarenessProgress = 65;
-
-  const user = useAuthStore(state => state.user); // get logged-in user
-  const userName = user?.name || "User"; // fallback if name not available
+  const user = useAuthStore((state) => state.user);
+  const userName = user?.name || "User";
 
   return (
     <div className="p-6 space-y-6">
@@ -119,14 +136,41 @@ export default function Dashboard() {
                 className="w-full h-40 object-cover rounded-md mb-4"
               />
 
+              {/* Expanded Section */}
               {expanded === policy.title ? (
                 <div className="space-y-3 text-gray-700 mb-3">
                   {policy.full.map((para, idx) => (
                     <p key={idx}>{para}</p>
                   ))}
+
+                  {/* 🎥 Multimedia Section */}
+                  <div className="mt-4 space-y-4">
+                    <h3 className="text-lg font-semibold mb-2">
+                      🎥 Multimedia Study
+                    </h3>
+                    {policy.videos && policy.videos.length > 0 ? (
+                      policy.videos.map((video, i) => (
+                        <iframe
+                          key={i}
+                          width="100%"
+                          height="220"
+                          src={getYouTubeEmbedUrl(video)}
+                          title={`${policy.title} video ${i + 1}`}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        📌 Video coming soon for this section.
+                      </p>
+                    )}
+                  </div>
                 </div>
               ) : null}
 
+              {/* Expand Button */}
               <Button
                 onClick={() =>
                   setExpanded(expanded === policy.title ? null : policy.title)
