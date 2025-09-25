@@ -9,35 +9,97 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import evergreen from '@/assets/evergreen-logo.jpeg';
 
+// Hardcoded user database
+const USERS = [
+  {
+    name: "Gunaratne Wickrama",
+    email: "gunaratnewickrama@gmail.com",
+    role: "Employee",
+    password: "Sandul1@3",
+    otp: "839201",
+  },
+  {
+    name: "Kalu Athal",
+    email: "kaluuathal@gmail.com",
+    role: "Employee",
+    password: "Kalu1@3",
+    otp: "472915",
+  },
+  {
+    name: "Yasas Nawanjana",
+    email: "yasas.nawanjana@gmail.com",
+    role: "Manager",
+    password: "Yasas1@3",
+    otp: "158637",
+  },
+  {
+    name: "Linuka Auchithya",
+    email: "linukaauchithya@gmail.com",
+    role: "Admin",
+    password: "Linuka1@3",
+    otp: "904582",
+  },
+  {
+    name: "N Lokuvithana",
+    email: "nlokuvithana71@gmail.com",
+    role: "Admin",
+    password: "Nisith1@3",
+    otp: "726394",
+  },
+];
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
+  const [step, setStep] = useState<"login" | "otp">("login");
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  const login = useAuthStore(state => state.login);
+
+  const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Step 1: Check email + password
+  const handleLoginStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    const user = USERS.find(
+      (u) => u.email === username.trim() && u.password === password
+    );
+
+    if (user) {
+      setCurrentUser(user);
+      setStep("otp"); // move to OTP step
+    } else {
+      setError("Invalid email or password.");
+    }
+  };
+
+  // Step 2: Verify OTP
+  const handleOtpStep = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
-      const success = await login(username, password, otp);
-      if (success) {
+      if (otp === currentUser?.otp) {
+        await login(currentUser.email, currentUser.password, otp);
         toast({
           title: "Login successful",
-          description: "Welcome to Evergreen Training Portal!",
+          description: `Welcome ${currentUser.name} (${currentUser.role})!`,
         });
         navigate('/dashboard');
       } else {
-        setError('Invalid credentials or OTP. Please try again.');
+        setError("Invalid OTP. Returning to login.");
+        setStep("login");
+        setOtp("");
+        setPassword("");
       }
     } catch (err) {
-      setError('An error occurred during login.');
+      setError("An error occurred during login.");
     } finally {
       setIsLoading(false);
     }
@@ -56,58 +118,73 @@ const Login = () => {
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl">Sign In</CardTitle>
             <CardDescription>
-              Enter your credentials to access the training portal
+              {step === "login"
+                ? "Enter your credentials to access the training portal"
+                : `Enter the 6-digit code sent to ${currentUser?.email}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Email Address</Label>
-                <Input
-                  id="username"
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
+            {step === "login" ? (
+              <form onSubmit={handleLoginStep} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Email Address</Label>
+                  <Input
+                    id="username"
+                    type="email"
+                    placeholder="Enter your email address"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="otp">Two-Factor Authentication Code</Label>
-                <Input
-                  id="otp"
-                  placeholder="Enter 6-digit code"
-                  maxLength={6}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  required
-                />
-              </div>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+                <Button type="submit" className="w-full">
+                  Continue
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={handleOtpStep} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="otp">Two-Factor Authentication Code</Label>
+                  <Input
+                    id="otp"
+                    placeholder="Enter 6-digit code"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : 'Sign In'}
-              </Button>
-            </form>
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
 
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Verifying..." : "Verify OTP"}
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
