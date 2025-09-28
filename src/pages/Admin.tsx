@@ -1,715 +1,624 @@
+// src/pages/Admin.tsx
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card, CardContent, CardDescription, CardHeader, CardTitle
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Users, BookOpen, FileText, Activity, Plus, Edit, Trash2, Search, Shield } from 'lucide-react';
+import {
+  Tabs, TabsContent, TabsList, TabsTrigger
+} from '@/components/ui/tabs';
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger
+} from '@/components/ui/dialog';
+import { Users, Plus, Search, BookOpen, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const initialUsers = [
-  { id: 1, name: 'Gunaratne Wickrema', email: 'gunaratnewickrema@gmail.com', role: 'employee', status: 'active', lastLogin: '2025-09-15' },
-  { id: 2, name: 'Yasas Nawanajana', email: 'yasas.nawanjana@gmail.com', role: 'manager', status: 'active', lastLogin: '2025-09-15' },
-  { id: 3, name: 'Nisith Lokuvithana', email: 'nlokuvithana71@gmail.com', role: 'admin', status: 'active', lastLogin: '2025-09-15' },
-  { id: 4, name: 'Linuka Auchithiya', email: 'linukaauchithiya@gmail.com', role: 'admin', status: 'active', lastLogin: '2025-09-14' }
-];
+type UserType = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  address: string;
+  phone: string;
+  role: 'Admin' | 'Employee' | 'Manager';
+  status: string;
+  lastLogin: string;
+};
 
-const initialTrainingModules = [
-  { id: 1, title: 'Workplace Safety Fundamentals', description: 'Essential safety protocols and procedures', status: 'active', enrolled: 1 },
-  { id: 2, title: 'Data Protection & GDPR', description: 'Data handling and privacy regulations', status: 'active', enrolled: 1 },
-  { id: 3, title: 'Environmental Sustainability', description: 'Green practices and environmental responsibility', status: 'draft', enrolled: 0 },
-  { id: 4, title: 'Diversity & Inclusion', description: 'Building inclusive workplace culture', status: 'active', enrolled: 3}
-];
+type Question = {
+  id: number;
+  question: string;
+  answers: { text: string; correct: boolean }[];
+};
 
-const initialPolicies = [
-  { id: 1, title: 'Code of Conduct', version: '2.1', status: 'active', acknowledgments: 1 },
-  { id: 2, title: 'Data Protection Policy', version: '1.3', status: 'active', acknowledgments: 2 },
-  { id: 3, title: 'Remote Work Policy', version: '1.0', status: 'active', acknowledgments: 1 },
-  { id: 4, title: 'Health & Safety Policy', version: '3.0', status: 'draft', acknowledgments: 0 }
-];
+type TrainingModule = {
+  id: number;
+  title: string;
+  subtitle: string;
+  questions: Question[];
+};
 
-const activityLogs = [
-  { id: 1, user: 'Gunaratne Wickrema', action: 'Completed training module', details: 'Workplace Safety Fundamentals', timestamp: '2025-09-15 14:30' },
-  { id: 2, user: 'Yasas Nawanajana', action: 'Acknowledged policy', details: 'Data Protection Policy v1.3', timestamp: '2025-09-15 13:45' },
-  { id: 3, user: 'Nisith Lokuvithana', action: 'User role updated', details: 'Yasas Nawanajana promoted to Manager', timestamp: '2025-09-15 12:20' },
-  { id: 4, user: 'Linuka Auchithiya', action: 'Generated report', details: 'Monthly Compliance Summary', timestamp: '2025-09-15 11:15' }
+type Policy = {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+};
+
+const initialUsers: UserType[] = [
+  {
+    id: 'EMP001',
+    firstName: 'Gunaratne',
+    lastName: 'Wickrema',
+    email: 'gunaratnewickrema@gmail.com',
+    password: '••••••',
+    address: 'Colombo, Sri Lanka',
+    phone: '+94 71 1234567',
+    role: 'Employee',
+    status: 'active',
+    lastLogin: '2025-09-15',
+  },
 ];
 
 const Admin = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState(initialUsers);
-  const [trainingModules, setTrainingModules] = useState(initialTrainingModules);
-  const [policies, setPolicies] = useState(initialPolicies);
-  const [newUserData, setNewUserData] = useState({ name: '', email: '', role: 'employee'});
-  const [newModuleData, setNewModuleData] = useState({ title: '', description: '' });
-  const [newPolicyData, setNewPolicyData] = useState({ title: '', version: '', description: '' });
-  const [editingUser, setEditingUser] = useState<any>(null);
-  const [editingModule, setEditingModule] = useState<any>(null);
-  const [editingPolicy, setEditingPolicy] = useState<any>(null);
   const { toast } = useToast();
 
-  const getRoleBadge = (role: string) => {
-    const roleColors: Record<string, string> = {
-      admin: 'bg-destructive',
-      manager: 'bg-warning text-warning-foreground',
-      employee: 'bg-secondary'
-    };
-    return <Badge className={roleColors[role] || 'bg-secondary'}>{role.replace('_', ' ')}</Badge>;
-  };
+  const [users, setUsers] = useState<UserType[]>(initialUsers);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [trainingModules, setTrainingModules] = useState<TrainingModule[]>([]);
+  const [policies, setPolicies] = useState<Policy[]>([]);
 
-  const getStatusBadge = (status: string) => {
-    return status === 'active' ? 
-      <Badge className="bg-success">Active</Badge> : 
-      <Badge variant="outline">Inactive</Badge>;
-  };
-
-  const getModuleStatusBadge = (status: string) => {
-    return status === 'active' ? 
-      <Badge className="bg-success">Published</Badge> : 
-      <Badge variant="secondary">Draft</Badge>;
-  };
-
-  const createUser = () => {
-    if (!newUserData.name || !newUserData.email) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newUser = {
-      ...newUserData,
-      id: Math.max(...users.map(u => u.id)) + 1,
-      status: 'active',
-      lastLogin: new Date().toISOString().split('T')[0]
-    };
-    setUsers([...users, newUser]);
-
-    toast({
-      title: "User Created",
-      description: `${newUserData.name} has been added successfully.`,
-    });
-    
-    setNewUserData({ name: '', email: '', role: 'employee' });
-  };
-
-  const createModule = () => {
-    if (!newModuleData.title || !newModuleData.description) {
-      toast({
-        title: "Missing Information", 
-        description: "Please provide both title and description.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newModule = {
-      ...newModuleData,
-      id: Math.max(...trainingModules.map(m => m.id)) + 1,
-      status: 'draft',
-      enrolled: 0
-    };
-    setTrainingModules([...trainingModules, newModule]);
-
-    toast({
-      title: "Training Module Created",
-      description: `${newModuleData.title} has been created as a draft.`,
-    });
-    
-    setNewModuleData({ title: '', description: '' });
-  };
-
-  const createPolicy = () => {
-    if (!newPolicyData.title || !newPolicyData.version) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide both title and version.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const newPolicy = {
-      ...newPolicyData,
-      id: Math.max(...policies.map(p => p.id)) + 1,
-      status: 'draft',
-      acknowledgments: 0
-    };
-    setPolicies([...policies, newPolicy]);
-
-    toast({
-      title: "Policy Uploaded",
-      description: `${newPolicyData.title} v${newPolicyData.version} has been uploaded successfully.`,
-    });
-    
-    setNewPolicyData({ title: '', version: '', description: '' });
-  };
-
-  const deleteUser = (id: number) => {
-    setUsers(users.filter(user => user.id !== id));
-    toast({
-      title: "User Deleted",
-      description: "User has been removed successfully.",
-    });
-  };
-
-  const deleteModule = (id: number) => {
-    setTrainingModules(trainingModules.filter(module => module.id !== id));
-    toast({
-      title: "Module Deleted",
-      description: "Training module has been removed successfully.",
-    });
-  };
-
-  const deletePolicy = (id: number) => {
-    setPolicies(policies.filter(policy => policy.id !== id));
-    toast({
-      title: "Policy Deleted",
-      description: "Policy has been removed successfully.",
-    });
-  };
-
-  const updateUser = () => {
-    if (!editingUser.name || !editingUser.email) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setUsers(users.map(user => user.id === editingUser.id ? editingUser : user));
-    setEditingUser(null);
-    toast({
-      title: "User Updated",
-      description: "User information has been updated successfully.",
-    });
-  };
-
-  const updateModule = () => {
-    if (!editingModule.title || !editingModule.description) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide both title and description.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setTrainingModules(trainingModules.map(module => module.id === editingModule.id ? editingModule : module));
-    setEditingModule(null);
-    toast({
-      title: "Module Updated",
-      description: "Training module has been updated successfully.",
-    });
-  };
-
-  const updatePolicy = () => {
-    if (!editingPolicy.title || !editingPolicy.version) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide both title and version.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setPolicies(policies.map(policy => policy.id === editingPolicy.id ? editingPolicy : policy));
-    setEditingPolicy(null);
-    toast({
-      title: "Policy Updated",
-      description: "Policy has been updated successfully.",
-    });
-  };
-
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const getRoleBadge = (role: string) => (
+    <Badge className={role === 'Admin' ? 'bg-destructive' : role === 'Manager' ? 'bg-warning' : 'bg-secondary'}>
+      {role}
+    </Badge>
   );
+
+  const getStatusBadge = (status: string) =>
+    status === 'active'
+      ? <Badge className="bg-success">Active</Badge>
+      : <Badge variant="outline">Inactive</Badge>;
+
+  const filteredUsers = users.filter(
+    (u) =>
+      `${u.firstName} ${u.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const addModule = (module: TrainingModule) => {
+    setTrainingModules([...trainingModules, module]);
+    toast({ title: 'Module Added', description: `${module.title} created` });
+  };
+
+  const addPolicy = (policy: Policy) => {
+    setPolicies([...policies, policy]);
+    toast({ title: 'Policy Added', description: `${policy.title} created` });
+  };
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Admin Panel</h1>
-        <p className="text-muted-foreground">Manage users, content, and system settings</p>
-      </div>
+      <h1 className="text-3xl font-bold">Admin Panel</h1>
+      <p className="text-muted-foreground">Manage users, training & policies</p>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="users" className="gap-2">
-            <Users className="h-4 w-4" />
-            Users
-          </TabsTrigger>
-          <TabsTrigger value="training" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            Training
-          </TabsTrigger>
-          <TabsTrigger value="policies" className="gap-2">
-            <FileText className="h-4 w-4" />
-            Policies
-          </TabsTrigger>
-          <TabsTrigger value="logs" className="gap-2">
-            <Activity className="h-4 w-4" />
-            Activity Logs
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="users"><Users className="h-4 w-4" /> Users</TabsTrigger>
+          <TabsTrigger value="training"><BookOpen className="h-4 w-4" /> Training</TabsTrigger>
+          <TabsTrigger value="policies"><FileText className="h-4 w-4" /> Policies</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="users" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage user accounts and roles</CardDescription>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add User
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create New User</DialogTitle>
-                    <DialogDescription>Add a new user to the system</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
-                      <Input
-                        id="name"
-                        value={newUserData.name}
-                        onChange={(e) => setNewUserData({...newUserData, name: e.target.value})}
-                        placeholder="Enter full name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={newUserData.email}
-                        onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                        placeholder="Enter email address"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <Select value={newUserData.role} onValueChange={(value) => setNewUserData({...newUserData, role: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="employee">Employee</SelectItem>
-                          <SelectItem value="manager">Manager</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button onClick={createUser} className="w-full">
-                      Create User
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="flex items-center gap-2 max-w-sm">
-                  <Search className="h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search users..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Name</th>
-                      <th className="text-left p-2">Email</th>
-                      <th className="text-left p-2">Role</th>
-                      <th className="text-left p-2">Status</th>
-                      <th className="text-left p-2">Last Login</th>
-                      <th className="text-left p-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b">
-                        <td className="p-2 font-medium">{user.name}</td>
-                        <td className="p-2 text-muted-foreground">{user.email}</td>
-                        <td className="p-2">{getRoleBadge(user.role)}</td>
-                        <td className="p-2">{getStatusBadge(user.status)}</td>
-                        <td className="p-2 text-sm text-muted-foreground">{user.lastLogin}</td>
-                        <td className="p-2">
-                          <div className="flex gap-1">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => setEditingUser(user)}
-                            >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => deleteUser(user.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="training" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Training Modules</CardTitle>
-                <CardDescription>Create and manage training content</CardDescription>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Module
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create Training Module</DialogTitle>
-                    <DialogDescription>Add a new training module</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="moduleTitle">Title</Label>
-                      <Input
-                        id="moduleTitle"
-                        value={newModuleData.title}
-                        onChange={(e) => setNewModuleData({...newModuleData, title: e.target.value})}
-                        placeholder="Enter module title"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="moduleDescription">Description</Label>
-                      <Textarea
-                        id="moduleDescription"
-                        value={newModuleData.description}
-                        onChange={(e) => setNewModuleData({...newModuleData, description: e.target.value})}
-                        placeholder="Enter module description"
-                        rows={4}
-                      />
-                    </div>
-                    <Button onClick={createModule} className="w-full">
-                      Create Module
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {trainingModules.map((module) => (
-                  <div key={module.id} className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{module.title}</h4>
-                          {getModuleStatusBadge(module.status)}
-                        </div>
-                        <p className="text-sm text-muted-foreground">{module.description}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {module.enrolled} employees enrolled
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingModule(module)}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => deleteModule(module.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="policies" className="space-y-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Policy Management</CardTitle>
-                <CardDescription>Upload and manage company policies</CardDescription>
-              </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Upload Policy
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Upload Policy</DialogTitle>
-                    <DialogDescription>Add a new company policy</DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="policyTitle">Policy Title</Label>
-                      <Input
-                        id="policyTitle"
-                        value={newPolicyData.title}
-                        onChange={(e) => setNewPolicyData({...newPolicyData, title: e.target.value})}
-                        placeholder="Enter policy title"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="policyVersion">Version</Label>
-                      <Input
-                        id="policyVersion"
-                        value={newPolicyData.version}
-                        onChange={(e) => setNewPolicyData({...newPolicyData, version: e.target.value})}
-                        placeholder="e.g., 1.0"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="policyDescription">Description (Optional)</Label>
-                      <Textarea
-                        id="policyDescription"
-                        value={newPolicyData.description}
-                        onChange={(e) => setNewPolicyData({...newPolicyData, description: e.target.value})}
-                        placeholder="Enter policy description"
-                        rows={3}
-                      />
-                    </div>
-                    <Button onClick={createPolicy} className="w-full">
-                      Upload Policy
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {policies.map((policy) => (
-                  <div key={policy.id} className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{policy.title}</h4>
-                          <Badge variant="outline">v{policy.version}</Badge>
-                          {getModuleStatusBadge(policy.status)}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {policy.acknowledgments} acknowledgments
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setEditingPolicy(policy)}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => deletePolicy(policy.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="logs" className="space-y-6">
+        {/* ------------------- Users ------------------- */}
+        <TabsContent value="users">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                System Activity Logs
-              </CardTitle>
-              <CardDescription>Monitor system activities and user actions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {activityLogs.map((log) => (
-                  <div key={log.id} className="flex items-start gap-3 p-3 border rounded-lg">
-                    <Shield className="h-4 w-4 text-primary mt-1" />
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{log.user}</span>
-                        <span className="text-sm text-muted-foreground">{log.action}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{log.details}</p>
-                      <p className="text-xs text-muted-foreground">{log.timestamp}</p>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>User Management</CardTitle>
+                  <CardDescription>Add, search, edit & delete user accounts</CardDescription>
+                </div>
               </div>
+            </CardHeader>
+
+            <CardContent>
+              {/* --- Buttons: Create / Edit / Delete --- */}
+              <div className="flex gap-4 mb-6">
+                {/* Create User */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline"><Plus className="h-4 w-4 mr-1" /> Create User</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader><DialogTitle>Create User</DialogTitle></DialogHeader>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const form = e.target as HTMLFormElement;
+                        const newUser: UserType = {
+                          id: (form.elements.namedItem('id') as HTMLInputElement).value,
+                          firstName: (form.elements.namedItem('firstName') as HTMLInputElement).value,
+                          lastName: (form.elements.namedItem('lastName') as HTMLInputElement).value,
+                          email: (form.elements.namedItem('email') as HTMLInputElement).value,
+                          password: (form.elements.namedItem('password') as HTMLInputElement).value,
+                          address: (form.elements.namedItem('address') as HTMLInputElement).value,
+                          phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
+                          role: (form.elements.namedItem('role') as HTMLSelectElement).value as UserType['role'],
+                          status: 'active',
+                          lastLogin: '-',
+                        };
+                        setUsers([...users, newUser]);
+                        toast({ title: 'User Created', description: `${newUser.firstName} ${newUser.lastName}` });
+                        form.reset();
+                      }}
+                      className="space-y-3"
+                    >
+                      <Label>Employee ID</Label>
+                      <Input name="id" placeholder="EMP001" required />
+                      <Label>First Name</Label>
+                      <Input name="firstName" required />
+                      <Label>Last Name</Label>
+                      <Input name="lastName" required />
+                      <Label>Email</Label>
+                      <Input type="email" name="email" required />
+                      <Label>Password</Label>
+                      <Input type="password" name="password" required />
+                      <Label>Address</Label>
+                      <Input name="address" required />
+                      <Label>Phone</Label>
+                      <Input name="phone" required />
+                      <Label>Role</Label>
+                      <select name="role" className="w-full border rounded p-2" required>
+                        <option value="">Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Employee">Employee</option>
+                      </select>
+                      <Button type="submit">Create User</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
+   {/* Edit User */}
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline">Edit User</Button>
+  </DialogTrigger>
+  <DialogContent className="max-w-lg">
+    <DialogHeader><DialogTitle>Edit User</DialogTitle></DialogHeader>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const idInput = form.elements.namedItem('id') as HTMLInputElement;
+        const user = users.find(u => u.id === idInput.value);
+        if (!user) {
+          toast({ title: 'Error', description: `User ID ${idInput.value} not found`, variant: 'destructive' });
+          return;
+        }
+
+        // Update user
+        const updatedUsers = users.map(u =>
+          u.id === user.id
+            ? {
+                ...u,
+                firstName: (form.elements.namedItem('firstName') as HTMLInputElement).value || u.firstName,
+                lastName: (form.elements.namedItem('lastName') as HTMLInputElement).value || u.lastName,
+                email: (form.elements.namedItem('email') as HTMLInputElement).value || u.email,
+                address: (form.elements.namedItem('address') as HTMLInputElement).value || u.address,
+                phone: (form.elements.namedItem('phone') as HTMLInputElement).value || u.phone,
+                role: (form.elements.namedItem('role') as HTMLSelectElement).value as UserType['role'] || u.role,
+              }
+            : u
+        );
+
+        setUsers(updatedUsers);
+        toast({ title: 'User Updated', description: `User ${user.id} updated` });
+        form.reset();
+      }}
+      className="space-y-3"
+    >
+      <Label>Employee ID</Label>
+      <Input
+        name="id"
+        placeholder="EMP001"
+        required
+        onBlur={(e) => {
+          // When user leaves the ID input, autofill the rest
+          const user = users.find(u => u.id === e.target.value);
+          if (user) {
+            const form = e.target.closest('form') as HTMLFormElement;
+            (form.elements.namedItem('firstName') as HTMLInputElement).value = user.firstName;
+            (form.elements.namedItem('lastName') as HTMLInputElement).value = user.lastName;
+            (form.elements.namedItem('email') as HTMLInputElement).value = user.email;
+            (form.elements.namedItem('address') as HTMLInputElement).value = user.address;
+            (form.elements.namedItem('phone') as HTMLInputElement).value = user.phone;
+            (form.elements.namedItem('role') as HTMLSelectElement).value = user.role;
+          }
+        }}
+      />
+      <Label>First Name</Label>
+      <Input name="firstName" required />
+      <Label>Last Name</Label>
+      <Input name="lastName" required />
+      <Label>Email</Label>
+      <Input name="email" required />
+      <Label>Address</Label>
+      <Input name="address" required />
+      <Label>Phone</Label>
+      <Input name="phone" required />
+      <Label>Role</Label>
+      <select name="role" className="w-full border rounded p-2" required>
+        <option value="">Select Role</option>
+        <option value="Admin">Admin</option>
+        <option value="Manager">Manager</option>
+        <option value="Employee">Employee</option>
+      </select>
+      <Button type="submit">Save Changes</Button>
+    </form>
+  </DialogContent>
+</Dialog>
+
+
+                {/* Delete User */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="destructive">Delete User</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader><DialogTitle>Delete User</DialogTitle></DialogHeader>
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const form = e.target as HTMLFormElement;
+                        const id = (form.elements.namedItem('id') as HTMLInputElement).value;
+                        const exists = users.find(u => u.id === id);
+                        if (!exists) {
+                          toast({ title: 'Error', description: `User ID ${id} not found`, variant: 'destructive' });
+                          return;
+                        }
+                        setUsers(users.filter(u => u.id !== id));
+                        toast({ title: 'User Deleted', description: `User ${id} removed` });
+                        form.reset();
+                      }}
+                      className="space-y-3"
+                    >
+                      <Label>Employee ID</Label>
+                      <Input name="id" placeholder="EMP001" required />
+                      <Button type="submit" variant="destructive">Confirm Delete</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* --- Search & Table --- */}
+              <div className="flex gap-2 mb-4 max-w-sm">
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">ID</th>
+                    <th className="text-left p-2">Name</th>
+                    <th className="text-left p-2">Email</th>
+                    <th className="text-left p-2">Role</th>
+                    <th className="text-left p-2">Address</th>
+                    <th className="text-left p-2">Phone</th>
+                    <th className="text-left p-2">Status</th>
+                    <th className="text-left p-2">Last Login</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((u) => (
+                    <tr key={u.id} className="border-b">
+                      <td className="p-2">{u.id}</td>
+                      <td className="p-2">{u.firstName} {u.lastName}</td>
+                      <td className="p-2">{u.email}</td>
+                      <td className="p-2">{getRoleBadge(u.role)}</td>
+                      <td className="p-2">{u.address}</td>
+                      <td className="p-2">{u.phone}</td>
+                      <td className="p-2">{getStatusBadge(u.status)}</td>
+                      <td className="p-2">{u.lastLogin}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* ------------------- Training ------------------- */}
+<TabsContent value="training">
+  <Card>
+    <CardHeader className="flex justify-between items-center gap-2">
+      <div>
+        <CardTitle>Training Modules</CardTitle>
+        <CardDescription>Create and manage training modules</CardDescription>
+      </div>
+
+      <div className="flex gap-2">
+        {/* Add Module */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-1" /> Add Module</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add Training Module</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+
+                const newModule: TrainingModule = {
+                  id: Number((form.elements.namedItem("id") as HTMLInputElement).value),
+                  title: (form.elements.namedItem("title") as HTMLInputElement).value,
+                  subtitle: (form.elements.namedItem("subtitle") as HTMLInputElement).value,
+                  questions: [1, 2, 3].map((q) => ({
+                    id: q,
+                    question: (form.elements.namedItem(`q${q}`) as HTMLInputElement).value,
+                    answers: [1, 2, 3].map((a) => ({
+                      text: (form.elements.namedItem(`q${q}a${a}`) as HTMLInputElement).value,
+                      correct:
+                        (form.elements.namedItem(`q${q}correct`) as HTMLSelectElement).value === `a${a}`,
+                    })),
+                  })),
+                };
+
+                addModule(newModule);
+                form.reset();
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <Label>Module ID</Label>
+                <Input name="id" type="number" placeholder="Enter Module ID" required />
+              </div>
+              <div>
+                <Label>Module Title</Label>
+                <Input name="title" required />
+              </div>
+              <div>
+                <Label>Subtitle / Description</Label>
+                <Input name="subtitle" required />
+              </div>
+
+              {[1, 2, 3].map((q) => (
+                <div key={q} className="border p-3 rounded-md space-y-2">
+                  <Label>Question {q}</Label>
+                  <Input name={`q${q}`} placeholder={`Enter question ${q}`} required />
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {[1, 2, 3].map((a) => (
+                      <Input
+                        key={a}
+                        name={`q${q}a${a}`}
+                        placeholder={`Answer ${a}`}
+                        required
+                      />
+                    ))}
+                  </div>
+
+                  <div>
+                    <Label>Correct Answer</Label>
+                    <select
+                      name={`q${q}correct`}
+                      className="w-full border rounded p-2"
+                      required
+                    >
+                      <option value="">Select Correct Answer</option>
+                      <option value="a1">Answer 1</option>
+                      <option value="a2">Answer 2</option>
+                      <option value="a3">Answer 3</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+
+              <Button type="submit">Save Module</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        
+
+        {/* Delete Module */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="destructive">Delete Module</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete Training Module</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const id = Number((form.elements.namedItem('id') as HTMLInputElement).value);
+                const exists = trainingModules.find(m => m.id === id);
+                if (!exists) {
+                  toast({ title: 'Error', description: `Module ID ${id} not found`, variant: 'destructive' });
+                  return;
+                }
+                setTrainingModules(trainingModules.filter(m => m.id !== id));
+                toast({ title: 'Module Deleted', description: `Module ID ${id} removed` });
+                form.reset();
+              }}
+              className="space-y-3"
+            >
+              <Label>Module ID</Label>
+              <Input name="id" type="number" placeholder="Enter Module ID" required />
+              <Button type="submit" variant="destructive">Confirm Delete</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+      </div>
+    </CardHeader>
+
+    <CardContent className="space-y-3">
+      {trainingModules.map((m) => (
+        <div key={m.id} className="border rounded-lg p-4">
+          <h4 className="font-medium">{m.title} (ID: {m.id})</h4>
+          <p className="text-sm text-muted-foreground">{m.subtitle}</p>
+          <p className="text-xs text-muted-foreground">{m.questions.length} questions</p>
+        </div>
+      ))}
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
+        {/* ------------------- Policies ------------------- */}
+   <TabsContent value="policies">
+  <Card>
+    <CardHeader className="flex justify-between items-center gap-2">
+      <div>
+        <CardTitle>Policy Management</CardTitle>
+        <CardDescription>Create, edit & delete company policies</CardDescription>
+      </div>
+
+      <div className="flex gap-2">
+        {/* Add Policy */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-1" /> Add Policy</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add Policy</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const newPolicy: Policy = {
+                  id: Number((form.elements.namedItem('id') as HTMLInputElement).value),
+                  title: (form.elements.namedItem('title') as HTMLInputElement).value,
+                  subtitle: (form.elements.namedItem('subtitle') as HTMLInputElement).value,
+                  description: (form.elements.namedItem('description') as HTMLInputElement).value,
+                };
+                addPolicy(newPolicy);
+                form.reset();
+              }}
+              className="space-y-3"
+            >
+              <Label>Policy ID</Label>
+              <Input name="id" type="number" placeholder="Enter Policy ID" required />
+              <Label>Title</Label>
+              <Input name="title" required />
+              <Label>Subtitle</Label>
+              <Input name="subtitle" required />
+              <Label>Description</Label>
+              <Input name="description" required />
+              <Button type="submit">Save Policy</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Policy */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Edit Policy</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Policy</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const id = Number((form.elements.namedItem('id') as HTMLInputElement).value);
+                const index = policies.findIndex(p => p.id === id);
+                if (index === -1) {
+                  toast({ title: 'Error', description: `Policy ID ${id} not found`, variant: 'destructive' });
+                  return;
+                }
+                const updatedPolicies = [...policies];
+                updatedPolicies[index] = {
+                  ...updatedPolicies[index],
+                  title: (form.elements.namedItem('title') as HTMLInputElement).value || updatedPolicies[index].title,
+                  subtitle: (form.elements.namedItem('subtitle') as HTMLInputElement).value || updatedPolicies[index].subtitle,
+                  description: (form.elements.namedItem('description') as HTMLInputElement).value || updatedPolicies[index].description,
+                };
+                setPolicies(updatedPolicies);
+                toast({ title: 'Policy Updated', description: `Policy ID ${id} updated` });
+                form.reset();
+              }}
+              className="space-y-3"
+            >
+              <Label>Policy ID</Label>
+              <Input name="id" type="number" placeholder="Enter Policy ID to edit" required />
+              <Label>Title</Label>
+              <Input name="title" placeholder="Leave blank to keep current" />
+              <Label>Subtitle</Label>
+              <Input name="subtitle" placeholder="Leave blank to keep current" />
+              <Label>Description</Label>
+              <Input name="description" placeholder="Leave blank to keep current" />
+              <Button type="submit">Save Changes</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Policy */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="destructive">Delete Policy</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Delete Policy</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const id = Number((form.elements.namedItem('id') as HTMLInputElement).value);
+                const exists = policies.find(p => p.id === id);
+                if (!exists) {
+                  toast({ title: 'Error', description: `Policy ID ${id} not found`, variant: 'destructive' });
+                  return;
+                }
+                setPolicies(policies.filter(p => p.id !== id));
+                toast({ title: 'Policy Deleted', description: `Policy ID ${id} removed` });
+                form.reset();
+              }}
+              className="space-y-3"
+            >
+              <Label>Policy ID</Label>
+              <Input name="id" type="number" placeholder="Enter Policy ID" required />
+              <Button type="submit" variant="destructive">Confirm Delete</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </CardHeader>
+
+    <CardContent className="space-y-3">
+      {policies.map((p) => (
+        <div key={p.id} className="border rounded-lg p-4">
+          <h4 className="font-medium">{p.title} (ID: {p.id})</h4>
+          <p className="text-sm text-muted-foreground">{p.subtitle}</p>
+          <p className="text-xs text-muted-foreground">{p.description}</p>
+        </div>
+      ))}
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
       </Tabs>
-
-      {/* Edit User Dialog */}
-      <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Update user information</DialogDescription>
-          </DialogHeader>
-          {editingUser && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="editName">Full Name</Label>
-                <Input
-                  id="editName"
-                  value={editingUser.name}
-                  onChange={(e) => setEditingUser({...editingUser, name: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editEmail">Email</Label>
-                <Input
-                  id="editEmail"
-                  type="email"
-                  value={editingUser.email}
-                  onChange={(e) => setEditingUser({...editingUser, email: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editRole">Role</Label>
-                <Select value={editingUser.role} onValueChange={(value) => setEditingUser({...editingUser, role: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="employee">Employee</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button onClick={updateUser} className="w-full">
-                Update User
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Module Dialog */}
-      <Dialog open={!!editingModule} onOpenChange={() => setEditingModule(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Training Module</DialogTitle>
-            <DialogDescription>Update module information</DialogDescription>
-          </DialogHeader>
-          {editingModule && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="editModuleTitle">Title</Label>
-                <Input
-                  id="editModuleTitle"
-                  value={editingModule.title}
-                  onChange={(e) => setEditingModule({...editingModule, title: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editModuleDescription">Description</Label>
-                <Textarea
-                  id="editModuleDescription"
-                  value={editingModule.description}
-                  onChange={(e) => setEditingModule({...editingModule, description: e.target.value})}
-                  rows={4}
-                />
-              </div>
-              <Button onClick={updateModule} className="w-full">
-                Update Module
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Policy Dialog */}
-      <Dialog open={!!editingPolicy} onOpenChange={() => setEditingPolicy(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Policy</DialogTitle>
-            <DialogDescription>Update policy information</DialogDescription>
-          </DialogHeader>
-          {editingPolicy && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="editPolicyTitle">Policy Title</Label>
-                <Input
-                  id="editPolicyTitle"
-                  value={editingPolicy.title}
-                  onChange={(e) => setEditingPolicy({...editingPolicy, title: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editPolicyVersion">Version</Label>
-                <Input
-                  id="editPolicyVersion"
-                  value={editingPolicy.version}
-                  onChange={(e) => setEditingPolicy({...editingPolicy, version: e.target.value})}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="editPolicyDescription">Description</Label>
-                <Textarea
-                  id="editPolicyDescription"
-                  value={editingPolicy.description || ''}
-                  onChange={(e) => setEditingPolicy({...editingPolicy, description: e.target.value})}
-                  rows={3}
-                />
-              </div>
-              <Button onClick={updatePolicy} className="w-full">
-                Update Policy
-              </Button>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
